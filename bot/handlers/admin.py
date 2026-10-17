@@ -64,6 +64,26 @@ async def cb_stats(callback: CallbackQuery, user: dict) -> None:
     await callback.message.edit_text(text, reply_markup=stats_kb(), parse_mode="Markdown")
     await callback.answer()
 
+@router.callback_query(F.data == "admin:groups_stats")
+async def cb_groups_stats(callback: CallbackQuery, user: dict) -> None:
+    if not _is_admin(user):
+        await callback.answer(t("no_rights"), show_alert=True)
+        return
+    
+    groups_data = await db.get_groups_stats()
+    if not groups_data:
+        text = t("no_groups_stats")
+    else:
+        text = f"{t('groups_stats_title')}\n\n"
+        for g in groups_data:
+            text += f"👥 **{g['title']}**\n"
+            text += f"├ {t('stats_voices', count=g['count'])}\n"
+            text += f"├ {t('stats_duration', duration=format_duration(g['duration']))}\n"
+            text += f"└ {t('stats_size', size=format_size(g['size']))}\n\n"
+
+    await callback.message.edit_text(text, reply_markup=stats_kb(), parse_mode="Markdown")
+    await callback.answer()
+
 @router.callback_query(F.data == "admin:back")
 async def cb_back(callback: CallbackQuery, user: dict) -> None:
     if not _is_admin(user):

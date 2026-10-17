@@ -60,7 +60,9 @@ async def handle_voice(message: Message, user: dict) -> None:
 
         duration = message.voice.duration
         size = message.voice.file_size or 0
-        await db.add_stat(user["user_id"], duration, size)
+        
+        await db.add_stat(message.from_user.id, message.chat.id, duration, size)
+        
         await status.edit_text(f"📝 {text}")
     finally:
         try:

@@ -18,6 +18,7 @@ TEXTS = {
         "btn_admin_panel": "🛠 Admin Panel",
         "btn_users": "👥 Users",
         "btn_global_stats": "📊 Global Stats",
+        "btn_groups_stats": "👥 Groups Stats",
         "btn_back_menu": "◀️ To Menu",
         "btn_back": "◀️ Back",
         "btn_make_admin": "⬆️ Make Admin",
@@ -26,6 +27,8 @@ TEXTS = {
         
         "stats_title": "📊 **Your Statistics**",
         "global_stats_title": "📊 **Global Service Statistics**",
+        "groups_stats_title": "📊 **Statistics by Groups**",
+        "no_groups_stats": "No group statistics available yet.",
         "stats_voices": "🎤 Processed voices: **{count}**",
         "stats_duration": "⏱ Total duration: **{duration}**",
         "stats_size": "💾 Total size: **{size}**",
@@ -75,6 +78,7 @@ TEXTS = {
         "btn_admin_panel": "🛠 Админ-панель",
         "btn_users": "👥 Пользователи",
         "btn_global_stats": "📊 Общая статистика",
+        "btn_groups_stats": "👥 Статистика групп",
         "btn_back_menu": "◀️ В меню",
         "btn_back": "◀️ Назад",
         "btn_make_admin": "⬆️ Сделать админом",
@@ -83,6 +87,8 @@ TEXTS = {
         
         "stats_title": "📊 **Ваша статистика**",
         "global_stats_title": "📊 **Общая статистика сервиса**",
+        "groups_stats_title": "📊 **Статистика по группам**",
+        "no_groups_stats": "Статистики по группам пока нет.",
         "stats_voices": "🎤 Обработано голосовых: **{count}**",
         "stats_duration": "⏱ Общая длительность: **{duration}**",
         "stats_size": "💾 Общий вес: **{size}**",

@@ -26,11 +26,17 @@ async def connect() -> None:
         CREATE TABLE IF NOT EXISTS stats (
             id                INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id           INTEGER NOT NULL,
+            chat_id           INTEGER NOT NULL,
             timestamp         TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
             duration_sec      INTEGER NOT NULL,
             file_size_bytes   INTEGER NOT NULL
         )
     """)
+    try:
+        await _conn.execute("ALTER TABLE stats ADD COLUMN chat_id INTEGER NOT NULL DEFAULT 0")
+    except aiosqlite.OperationalError:
+        pass
+        
     await _conn.commit()
 
 async def close() -> None:
@@ -78,8 +84,11 @@ async def remove_group(chat_id: int) -> None:
     await _conn.execute("DELETE FROM groups WHERE chat_id = ?", (chat_id,))
     await _conn.commit()
 
-async def add_stat(user_id: int, duration_sec: int, file_size_bytes: int) -> None:
-    await _conn.execute("INSERT INTO stats (user_id, duration_sec, file_size_bytes) VALUES (?, ?, ?)", (user_id, duration_sec, file_size_bytes))
+async def add_stat(user_id: int, chat_id: int, duration_sec: int, file_size_bytes: int) -> None:
+    await _conn.execute(
+        "INSERT INTO stats (user_id, chat_id, duration_sec, file_size_bytes) VALUES (?, ?, ?, ?)", 
+        (user_id, chat_id, duration_sec, file_size_bytes)
+    )
     await _conn.commit()
 
 async def get_global_stats() -> dict:
@@ -91,3 +100,18 @@ async def get_user_stats(user_id: int) -> dict:
     async with _conn.execute("SELECT COUNT(*), SUM(duration_sec), SUM(file_size_bytes) FROM stats WHERE user_id = ?", (user_id,)) as cur:
         count, duration, size = await cur.fetchone()
     return {"count": count or 0, "duration": duration or 0, "size": size or 0}
+
+async def get_groups_stats() -> list[dict]:
+    async with _conn.execute("""
+        SELECT s.chat_id, g.title, COUNT(*), SUM(s.duration_sec), SUM(s.file_size_bytes)
+        FROM stats s
+        LEFT JOIN groups g ON s.chat_id = g.chat_id
+        WHERE s.chat_id != s.user_id
+        GROUP BY s.chat_id
+        ORDER BY COUNT(*) DESC
+    """) as cur:
+        rows = await cur.fetchall()
+    return [
+        {"chat_id": r[0], "title": r[1] or f"Group {r[0]}", "count": r[2], "duration": r[3], "size": r[4]} 
+        for r in rows
+    ]

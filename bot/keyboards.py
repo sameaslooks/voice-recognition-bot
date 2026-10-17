@@ -38,6 +38,7 @@ def admin_menu_kb(pending: int = 0) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=label, callback_data="admin:users")],
         [InlineKeyboardButton(text=t("btn_global_stats"), callback_data="admin:stats")],
+        [InlineKeyboardButton(text=t("btn_groups_stats"), callback_data="admin:groups_stats")],
         [InlineKeyboardButton(text=t("btn_back_menu"), callback_data="main_menu")],
     ])
 
