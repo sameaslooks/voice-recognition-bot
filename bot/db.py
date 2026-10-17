@@ -1,0 +1,93 @@
+import aiosqlite
+from bot import config
+
+_conn: aiosqlite.Connection | None = None
+
+async def connect() -> None:
+    global _conn
+    _conn = await aiosqlite.connect(config.DB_PATH)
+    await _conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            user_id     INTEGER PRIMARY KEY,
+            username    TEXT,
+            role        TEXT NOT NULL DEFAULT 'pending',
+            created_at  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    await _conn.execute("""
+        CREATE TABLE IF NOT EXISTS groups (
+            chat_id     INTEGER PRIMARY KEY,
+            title       TEXT,
+            added_by    INTEGER NOT NULL,
+            created_at  TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    await _conn.execute("""
+        CREATE TABLE IF NOT EXISTS stats (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id           INTEGER NOT NULL,
+            timestamp         TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            duration_sec      INTEGER NOT NULL,
+            file_size_bytes   INTEGER NOT NULL
+        )
+    """)
+    await _conn.commit()
+
+async def close() -> None:
+    if _conn:
+        await _conn.close()
+
+async def get_user(user_id: int) -> dict | None:
+    async with _conn.execute("SELECT user_id, username, role FROM users WHERE user_id = ?", (user_id,)) as cur:
+        row = await cur.fetchone()
+    return {"user_id": row[0], "username": row[1], "role": row[2]} if row else None
+
+async def create_user(user_id: int, username: str | None, role: str) -> None:
+    await _conn.execute("INSERT OR IGNORE INTO users (user_id, username, role) VALUES (?, ?, ?)", (user_id, username, role))
+    await _conn.commit()
+
+async def set_role(user_id: int, role: str) -> None:
+    await _conn.execute("UPDATE users SET role = ? WHERE user_id = ?", (role, user_id))
+    await _conn.commit()
+
+async def get_all_users() -> list[dict]:
+    async with _conn.execute("SELECT user_id, username, role FROM users ORDER BY created_at") as cur:
+        rows = await cur.fetchall()
+    return [{"user_id": r[0], "username": r[1], "role": r[2]} for r in rows]
+
+async def get_admins() -> list[dict]:
+    async with _conn.execute("SELECT user_id, username, role FROM users WHERE role = 'admin'") as cur:
+        rows = await cur.fetchall()
+    return [{"user_id": r[0], "username": r[1], "role": r[2]} for r in rows]
+
+async def is_first_user() -> bool:
+    async with _conn.execute("SELECT COUNT(*) FROM users") as cur:
+        (count,) = await cur.fetchone()
+    return count == 0
+
+async def add_group(chat_id: int, title: str, added_by: int) -> None:
+    await _conn.execute("INSERT OR REPLACE INTO groups (chat_id, title, added_by) VALUES (?, ?, ?)", (chat_id, title, added_by))
+    await _conn.commit()
+
+async def get_group(chat_id: int) -> dict | None:
+    async with _conn.execute("SELECT chat_id, title, added_by FROM groups WHERE chat_id = ?", (chat_id,)) as cur:
+        row = await cur.fetchone()
+    return {"chat_id": row[0], "title": row[1], "added_by": row[2]} if row else None
+
+async def remove_group(chat_id: int) -> None:
+    await _conn.execute("DELETE FROM groups WHERE chat_id = ?", (chat_id,))
+    await _conn.commit()
+
+async def add_stat(user_id: int, duration_sec: int, file_size_bytes: int) -> None:
+    await _conn.execute("INSERT INTO stats (user_id, duration_sec, file_size_bytes) VALUES (?, ?, ?)", (user_id, duration_sec, file_size_bytes))
+    await _conn.commit()
+
+async def get_global_stats() -> dict:
+    async with _conn.execute("SELECT COUNT(*), SUM(duration_sec), SUM(file_size_bytes) FROM stats") as cur:
+        count, duration, size = await cur.fetchone()
+    return {"count": count or 0, "duration": duration or 0, "size": size or 0}
+
+async def get_user_stats(user_id: int) -> dict:
+    async with _conn.execute("SELECT COUNT(*), SUM(duration_sec), SUM(file_size_bytes) FROM stats WHERE user_id = ?", (user_id,)) as cur:
+        count, duration, size = await cur.fetchone()
+    return {"count": count or 0, "duration": duration or 0, "size": size or 0}

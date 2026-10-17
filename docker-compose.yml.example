@@ -1,0 +1,23 @@
+services:
+  voice-recognition-bot:
+    build:
+      context: .
+      args:
+        APT_MIRROR: deb.debian.org
+        PIP_INDEX_URL: https://pypi.org/simple
+    container_name: voice-recognition-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DB_PATH: /data/bot.db
+      MODEL_DIR: /models
+    volumes:
+      - ./models:/models
+      - ./data:/data
+    mem_limit: 1g
+    memswap_limit: 1g
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
