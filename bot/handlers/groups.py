@@ -3,6 +3,7 @@ from aiogram.types import ChatMemberUpdated
 from aiogram.filters import ChatMemberUpdatedFilter, IS_NOT_MEMBER, IS_MEMBER
 from bot import db
 from bot.locales import t
+from bot.keyboards import about_public_kb
 
 router = Router()
 
@@ -22,7 +23,7 @@ async def bot_added_to_group(event: ChatMemberUpdated) -> None:
         return
 
     await db.add_group(chat_id, title, added_by)
-    await event.answer(t("group_added"))
+    await event.answer(t("group_added"), reply_markup=about_public_kb())
 
 @router.my_chat_member(ChatMemberUpdatedFilter(member_status_changed=IS_MEMBER >> IS_NOT_MEMBER))
 async def bot_removed_from_group(event: ChatMemberUpdated) -> None:

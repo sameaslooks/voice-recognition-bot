@@ -14,11 +14,20 @@ TEXTS = {
         "menu_title": "Main menu:",
         "help_text": "Send a voice message to get text.\n/menu — main menu.",
         
+        "cmd_start": "Start the bot",
+        "cmd_author": "About the author",
+        "cmd_admin": "Admin panel",
+        "cmd_help": "Help",
+        
         "btn_my_stats": "📊 My Stats",
         "btn_admin_panel": "🛠 Admin Panel",
         "btn_users": "👥 Users",
         "btn_global_stats": "📊 Global Stats",
         "btn_groups_stats": "👥 Groups Stats",
+        "btn_log_toggle": "📝 Logs: {status}",
+        "btn_log_backup": "📅 Keep logs: {days} days",
+        "btn_log_backup_inf": "📅 Keep logs: Infinite",
+        "btn_about": "ℹ️ About",
         "btn_back_menu": "◀️ To Menu",
         "btn_back": "◀️ Back",
         "btn_make_admin": "⬆️ Make Admin",
@@ -29,10 +38,12 @@ TEXTS = {
         "global_stats_title": "📊 **Global Service Statistics**",
         "groups_stats_title": "📊 **Statistics by Groups**",
         "no_groups_stats": "No group statistics available yet.",
+        "group_details_title": "Group Stats: {title}",
         "stats_voices": "🎤 Processed voices: **{count}**",
         "stats_duration": "⏱ Total duration: **{duration}**",
         "stats_size": "💾 Total size: **{size}**",
         "stats_privacy": "*Message texts are not saved.*",
+        "stats_privacy_on": "*⚠️ Warning: Message texts are currently being saved in logs.*",
         
         "user_info": "👤 {name}\nID: `{uid}`\nRole: {role}\n\n📊 **Statistics:**\nVoices: {count}\nDuration: {duration}\nSize: {size}",
         
@@ -59,7 +70,13 @@ TEXTS = {
         "empty_result": "🤷 Failed to recognize speech.",
         
         "send_start": "Please send /start first.",
-        "pending_approval": "⏳ Your request has not been approved yet."
+        "pending_approval": "⏳ Your request has not been approved yet.",
+        "cmd_not_supported_in_group": "⛔ This command is not supported in groups.",
+
+        "about_text": (
+            "Developed and maintained by [{author}]({github_profile}) • [Repository]({github_repo})\n\n"
+            "License: GPLv3. The code is open, but any use and distribution is strictly permitted under the terms of GPLv3 as stated in the repository."
+        )
     },
     "RU": {
         "role_admin": "Администратор",
@@ -74,13 +91,22 @@ TEXTS = {
         "menu_title": "Главное меню:",
         "help_text": "Отправьте голосовое сообщение — получите текст.\n/menu — главное меню.",
         
+        "cmd_start": "Начать работу",
+        "cmd_author": "Об авторе",
+        "cmd_admin": "Админ-панель",
+        "cmd_help": "Помощь",
+        
         "btn_my_stats": "📊 Моя статистика",
         "btn_admin_panel": "🛠 Админ-панель",
         "btn_users": "👥 Пользователи",
         "btn_global_stats": "📊 Общая статистика",
         "btn_groups_stats": "👥 Статистика групп",
-        "btn_back_menu": "◀️ В меню",
-        "btn_back": "◀️ Назад",
+        "btn_log_toggle": "📝 Логи транскриптов: {status}",
+        "btn_log_backup": "📅 Хранение логов: {days} дн.",
+        "btn_log_backup_inf": "📅 Хранение логов: Бесконечно",
+        "btn_about": "ℹ️ Об авторе",
+        "btn_back_menu": "В меню",
+        "btn_back": "Назад",
         "btn_make_admin": "⬆️ Сделать админом",
         "btn_make_user": "👤 Сделать пользователем",
         "btn_block": "🚫 Заблокировать",
@@ -89,10 +115,12 @@ TEXTS = {
         "global_stats_title": "📊 **Общая статистика сервиса**",
         "groups_stats_title": "📊 **Статистика по группам**",
         "no_groups_stats": "Статистики по группам пока нет.",
+        "group_details_title": "Статистика группы: {title}",
         "stats_voices": "🎤 Обработано голосовых: **{count}**",
         "stats_duration": "⏱ Общая длительность: **{duration}**",
         "stats_size": "💾 Общий вес: **{size}**",
         "stats_privacy": "*Тексты сообщений не сохраняются.*",
+        "stats_privacy_on": "*⚠️ Внимание: тексты сообщений сейчас сохраняются в логах.*",
         
         "user_info": "👤 {name}\nID: `{uid}`\nРоль: {role}\n\n📊 **Статистика:**\nГолосовых: {count}\nДлительность: {duration}\nВес: {size}",
         
@@ -119,7 +147,13 @@ TEXTS = {
         "empty_result": "🤷 Не удалось распознать речь.",
         
         "send_start": "Сначала отправьте /start.",
-        "pending_approval": "⏳ Ваша заявка ещё не одобрена."
+        "pending_approval": "⏳ Ваша заявка ещё не одобрена.",
+        "cmd_not_supported_in_group": "⛔ Эта команда не поддерживается в группах.",
+
+        "about_text": (
+            "Разработано и поддерживается [{author}]({github_profile}) • [репозиторий]({github_repo})\n\n"
+            "Лицензия: GPLv3. Код открыт, но любое использование и распространение допускается строго в рамках условий GPLv3, указанных в репозитории."
+        )
     }
 }
 

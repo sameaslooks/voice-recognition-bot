@@ -4,7 +4,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram import Bot
 
 from bot import db
-from bot.constants import ROLE_ADMIN, ROLE_PENDING
+from bot.constants import ROLE_ADMIN, ROLE_PENDING, AUTHOR_NAME, GITHUB_PROFILE, GITHUB_REPO
 from bot.keyboards import main_menu_kb, back_to_main_kb, format_size, format_duration
 from bot.locales import t
 
@@ -50,6 +50,17 @@ async def cmd_menu(message: Message, user: dict) -> None:
 @router.message(Command("help"))
 async def cmd_help(message: Message) -> None:
     await message.answer(t("help_text"))
+
+@router.message(Command("author"))
+async def cmd_author(message: Message) -> None:
+    text = t("about_text", author=AUTHOR_NAME, github_profile=GITHUB_PROFILE, github_repo=GITHUB_REPO)
+    await message.answer(text, parse_mode="Markdown", disable_web_page_preview=True)
+
+@router.callback_query(F.data == "about:show")
+async def cb_about_show(callback: CallbackQuery) -> None:
+    text = t("about_text", author=AUTHOR_NAME, github_profile=GITHUB_PROFILE, github_repo=GITHUB_REPO)
+    await callback.message.answer(text, parse_mode="Markdown", disable_web_page_preview=True)
+    await callback.answer()
 
 @router.callback_query(F.data == "main_menu")
 async def cb_main_menu(callback: CallbackQuery, user: dict) -> None:

@@ -13,6 +13,10 @@ NUM_THREADS = int(os.getenv("NUM_THREADS", "2"))
 MAX_SEGMENT_SEC = float(os.getenv("MAX_SEGMENT_SEC", "25"))
 MODEL_IDLE_TIMEOUT = int(os.getenv("MODEL_IDLE_TIMEOUT", "1800"))
 
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+LOG_TRANSCRIPTS = os.getenv("LOG_TRANSCRIPTS", "false").lower() == "true"
+LOG_BACKUP_DAYS = int(os.getenv("LOG_BACKUP_DAYS", "30"))
+
 ENCODER_PATH = os.path.join(MODEL_DIR, "encoder.int8.onnx")
 DECODER_PATH = os.path.join(MODEL_DIR, "decoder.onnx")
 JOINER_PATH = os.path.join(MODEL_DIR, "joiner.onnx")

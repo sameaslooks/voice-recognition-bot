@@ -1,12 +1,14 @@
 import os
 import tempfile
 import asyncio
+import logging
 from aiogram import F, Router
 from aiogram.types import Message
 from bot import db, speech
 from bot.locales import t
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 async def _update_status_loop(status_msg: Message, future: asyncio.Future, my_id: int):
     last_text = ""
@@ -34,6 +36,7 @@ async def _update_status_loop(status_msg: Message, future: asyncio.Future, my_id
 @router.message(F.voice)
 async def handle_voice(message: Message, user: dict) -> None:
     file = await message.bot.get_file(message.voice.file_id)
+    logger.info(f"Received voice from user {message.from_user.id} in chat {message.chat.id} (dur: {message.voice.duration}s)")
 
     with tempfile.NamedTemporaryFile(suffix=".ogg", delete=False) as tmp:
         ogg_path = tmp.name
@@ -48,6 +51,7 @@ async def handle_voice(message: Message, user: dict) -> None:
             text = await future
         except Exception as exc:
             updater.cancel()
+            logger.error(f"Recognition error: {exc}")
             await status.edit_text(t("recognition_error", error=exc))
             return
         finally:
@@ -55,14 +59,19 @@ async def handle_voice(message: Message, user: dict) -> None:
                 updater.cancel()
 
         if not text.strip():
+            logger.warning("Empty result returned from ASR.")
             await status.edit_text(t("empty_result"))
             return
 
         duration = message.voice.duration
         size = message.voice.file_size or 0
         
-        await db.add_stat(message.from_user.id, message.chat.id, duration, size)
+        await db.add_stat(message.from_user.id, message.from_user.username, message.chat.id, duration, size)
         
+        log_status = await db.get_setting("log_transcripts", "false")
+        if log_status == "true":
+            logger.info(f"Transcript (User {message.from_user.id}): {text}")
+            
         await status.edit_text(f"📝 {text}")
     finally:
         try:
